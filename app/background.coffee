@@ -13,10 +13,19 @@ queryBrowser = ->
         if tabs.length
           activeTab = tabs[0]
           console.log activeTab.url
+          updateLocal activeTab.url
         else
           console.log 'Chrome does not have focus'
     else
       console.log state
+
+updateLocal = (url) ->
+  storageArea = chrome.storage.local
+  storageArea.get 'cache', (items) ->
+    cache = items.cache ? {}
+    cache[url] = 0 unless cache[url]?
+    cache[url] += config.QUERY_INTERVAL
+    storageArea.set cache: cache
 
 updateServer = ->
   console.log 'updating server'

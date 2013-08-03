@@ -13,6 +13,7 @@
   },
   "permissions": [
     "tabs",
-    "idle"
+    "idle",
+    "storage"
   ]
 }
