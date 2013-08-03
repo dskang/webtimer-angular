@@ -47,6 +47,7 @@ module.exports = (grunt) ->
             "manifest.json"
             "bower_components/**/*"
             "images/*"
+            "oauth2/**/*"
           ]
         ]
 
