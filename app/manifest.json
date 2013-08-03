@@ -1,6 +1,5 @@
 {
   "manifest_version": 2,
-
   "name": "Web Timer",
   "version": "0.0.0",
   "description": "Keep track of how you spend your time on the web.",
@@ -13,6 +12,7 @@
     ]
   },
   "permissions": [
-    "tabs"
+    "tabs",
+    "idle"
   ]
 }
