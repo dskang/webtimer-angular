@@ -1,8 +1,9 @@
 config =
-  UPDATE_INTERVAL: 3
+  QUERY_INTERVAL: 3
+  UPDATE_INTERVAL: 60
   IDLE_THRESHOLD: 30
 
-updateData = ->
+queryBrowser = ->
   chrome.idle.queryState config.IDLE_THRESHOLD, (state) ->
     if state == "active"
       queryInfo =
@@ -17,4 +18,8 @@ updateData = ->
     else
       console.log state
 
-setInterval updateData, config.UPDATE_INTERVAL * 1000
+updateServer = ->
+  console.log 'updating server'
+
+setInterval queryBrowser, config.QUERY_INTERVAL * 1000
+setInterval updateServer, config.UPDATE_INTERVAL * 1000
