@@ -11,20 +11,24 @@ chrome.runtime.onInstalled.addListener (details) ->
     api_scope: 'https://www.googleapis.com/auth/userinfo.email'
 
   googleAuth.authorize ->
-    registerUser(googleAuth.getAccessToken())
+    getEmail(googleAuth.getAccessToken(), registerUser)
 
-registerUser = (access_token) ->
+getEmail = (access_token, callback) ->
   xhr = new XMLHttpRequest()
   xhr.open 'GET', "https://www.googleapis.com/oauth2/v2/userinfo?access_token=#{access_token}"
   xhr.onreadystatechange = ->
     if xhr.readyState == 4
       response = JSON.parse xhr.responseText
+      callback response.email, access_token
       console.log response
   xhr.send()
 
+registerUser = (email, access_token) ->
+  console.log 'Registering user: ', access_token, email
+
 queryBrowser = ->
   chrome.idle.queryState config.IDLE_THRESHOLD, (state) ->
-    if state == "active"
+    if state == 'active'
       queryInfo =
         active: true
         lastFocusedWindow: true
