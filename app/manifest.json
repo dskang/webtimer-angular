@@ -7,9 +7,7 @@
     "128": "images/icon_128.png"
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "page": "background.html"
   },
   "content_scripts": [{
     "matches": ["http://www.google.com/robots.txt*"],
@@ -19,6 +17,7 @@
   "permissions": [
     "tabs",
     "idle",
-    "storage"
+    "storage",
+    "https://accounts.google.com/o/oauth2/token"
   ]
 }

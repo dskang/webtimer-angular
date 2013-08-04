@@ -4,6 +4,15 @@ config =
   IDLE_THRESHOLD: 30
 storageArea = chrome.storage.local
 
+chrome.runtime.onInstalled.addListener (details) ->
+  googleAuth = new OAuth2 'google',
+    client_id: '50343319776-05t7b2687b6uq4e425oasfedoq043ank.apps.googleusercontent.com'
+    client_secret: '_MqLaCWyacnUAEh6hdx5L-J0'
+    api_scope: 'https://www.googleapis.com/auth/userinfo.email'
+
+  googleAuth.authorize ->
+    console.log googleAuth.getAccessToken()
+
 queryBrowser = ->
   chrome.idle.queryState config.IDLE_THRESHOLD, (state) ->
     if state == "active"

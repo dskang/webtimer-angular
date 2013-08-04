@@ -14,7 +14,10 @@ module.exports = (grunt) ->
         files: ["<%= webtimer.app %>/{,*/}*.coffee"]
         tasks: ["coffee:dist"]
       copy:
-        files: ["<%= webtimer.app %>/manifest.json"]
+        files: [
+          "<%= webtimer.app %>/manifest.json"
+          "<%= webtimer.app %>/{,*/}*.html"
+        ]
         tasks: ["copy:dist"]
 
     clean:
@@ -48,6 +51,7 @@ module.exports = (grunt) ->
             "bower_components/**/*"
             "images/*"
             "oauth2/**/*"
+            "{,*/}*.html"
           ]
         ]
 
