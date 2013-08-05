@@ -1,7 +1,6 @@
 jasmineEnv = jasmine.getEnv()
 jasmineEnv.updateInterval = 250
 
-console.log jasmine.HtmlReporter
 htmlReporter = new jasmine.HtmlReporter()
 
 jasmineEnv.addReporter(htmlReporter)
