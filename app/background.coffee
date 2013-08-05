@@ -27,6 +27,7 @@ class Tracker
       store[url] = 0 unless store[url]?
       store[url] += @config.QUERY_INTERVAL
       @storageArea.set items
+      console.log items
 
   @updateServer: =>
     @storageArea.get 'cache', (items) =>
@@ -60,7 +61,10 @@ class LoginCtrl
 
 init = ->
   test_env = window.location.pathname != '/background.html'
-  unless test_env
+  if test_env
+    window.Tracker = Tracker
+    window.LoginCtrl = LoginCtrl
+  else
     window.setInterval Tracker.queryBrowser, Tracker.config.QUERY_INTERVAL * 1000
     window.setInterval Tracker.updateServer, Tracker.config.UPDATE_INTERVAL * 1000 unless Tracker.config.OFFLINE_MODE
 

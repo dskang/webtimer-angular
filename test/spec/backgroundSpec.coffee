@@ -1,12 +1,27 @@
-describe "foo", ->
-  foo = null
+describe "Tracker", ->
+  describe "updateLocal", ->
+    beforeEach ->
+      Tracker.config =
+        OFFLINE_MODE: true
+        QUERY_INTERVAL: 3
+      spyOn(Tracker.storageArea, 'set')
 
-  beforeEach ->
-    foo = 0
-    foo += 1
+    it "should create a new entry for a URL that's not been tracked", ->
+      spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
+        callback {}
+      Tracker.updateLocal 'http://www.example.com'
 
-  afterEach ->
-    foo = 0
+      expect(Tracker.storageArea.set).toHaveBeenCalledWith
+        today:
+          'http://www.example.com': 3
 
-  it "should be equal 1", ->
-    expect(foo).toEqual 1
+    it "should update an already existing URL", ->
+      spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
+        callback
+          today:
+            'http://www.example.com': 3
+      Tracker.updateLocal 'http://www.example.com'
+
+      expect(Tracker.storageArea.set).toHaveBeenCalledWith
+        today:
+          'http://www.example.com': 6
