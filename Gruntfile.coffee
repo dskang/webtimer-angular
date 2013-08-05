@@ -13,6 +13,9 @@ module.exports = (grunt) ->
       coffee:
         files: ["<%= webtimer.app %>/{,*/}*.coffee"]
         tasks: ["coffee:dist"]
+      coffeeTest:
+        files: ["test/spec/{,*/}*.coffee"]
+        tasks: ["coffee:test"]
       copy:
         files: [
           "<%= webtimer.app %>/manifest.json"
@@ -26,7 +29,6 @@ module.exports = (grunt) ->
           dot: true
           src: [
             "<%= webtimer.dist %>/*"
-            "!<%= webtimer.dist %>/.git*"
           ]
         ]
 
@@ -39,6 +41,14 @@ module.exports = (grunt) ->
           dest: "<%= webtimer.dist %>"
           ext: ".js"
         ]
+      test:
+        files: [
+          expand: true
+          cwd: "test/spec"
+          src: "{,*/}*.coffee"
+          dest: "<%= webtimer.dist %>/spec"
+          ext: ".js"
+        ]
 
     copy:
       dist:
@@ -48,15 +58,38 @@ module.exports = (grunt) ->
           dest: "<%= webtimer.dist %>"
           src: [
             "manifest.json"
-            "bower_components/**/*"
+            "bower_components/**"
+            "!bower_components/jasmine/**"
             "images/*"
-            "oauth2/**/*"
+            "oauth2/**"
             "{,*/}*.html"
+          ]
+        ]
+      test:
+        files: [
+          expand: true
+          cwd: "<%= webtimer.app %>"
+          dest: "<%= webtimer.dist %>"
+          src: [
+            "bower_components/jasmine/lib/jasmine-core/*"
+          ]
+        ,
+          expand: true
+          cwd: "test"
+          dest: "<%= webtimer.dist %>"
+          src: [
+            "spec/runner.html"
           ]
         ]
 
   grunt.registerTask "default", [
-    "clean:dist"
+    "clean"
+    "coffee"
+    "copy"
+  ]
+
+  grunt.registerTask "build", [
+    "clean"
     "coffee:dist"
     "copy:dist"
   ]
