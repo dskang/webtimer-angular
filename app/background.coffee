@@ -3,9 +3,12 @@ class Tracker
     QUERY_INTERVAL: 3
     UPDATE_INTERVAL: 60
     IDLE_THRESHOLD: 30
-    OFFLINE_MODE: true
 
   @storageArea: chrome.storage.local
+
+  @extractDomain: (url) ->
+    re = /:\/\/(?:www\.)?(.+?)\//
+    url.match(re)[1]
 
   @queryBrowser: =>
     chrome.idle.queryState @config.IDLE_THRESHOLD, (state) =>
@@ -17,10 +20,10 @@ class Tracker
           if tabs.length
             activeTab = tabs[0]
             console.log activeTab.url
-            @updateLocal activeTab.url
+            @updateLocal 'cache', activeTab.url
+            @updateLocal 'today', activeTab.url
 
-  @updateLocal: (url) ->
-    store = if @config.OFFLINE_MODE then 'today' else 'cache'
+  @updateLocal: (store, url) ->
     @storageArea.get store, (items) =>
       items[store] ?= {}
       store = items[store]
@@ -66,9 +69,9 @@ init = ->
     window.LoginCtrl = LoginCtrl
   else
     window.setInterval Tracker.queryBrowser, Tracker.config.QUERY_INTERVAL * 1000
-    window.setInterval Tracker.updateServer, Tracker.config.UPDATE_INTERVAL * 1000 unless Tracker.config.OFFLINE_MODE
+    window.setInterval Tracker.updateServer, Tracker.config.UPDATE_INTERVAL * 1000
 
   chrome.runtime.onInstalled.addListener (details) ->
-    LoginCtrl.registerUser() unless Tracker.config.OFFLINE_MODE
+    LoginCtrl.registerUser() unless test_env
 
 init()

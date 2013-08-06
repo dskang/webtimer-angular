@@ -1,54 +1,48 @@
-describe 'Tracker', ->
-  describe 'updateLocal', ->
+describe "Tracker", ->
+
+  describe "updateLocal", ->
+
     beforeEach ->
       Tracker.config =
         QUERY_INTERVAL: 3
       spyOn(Tracker.storageArea, 'set')
 
-    describe 'online mode', ->
-      beforeEach ->
-        Tracker.config.OFFLINE_MODE = false
+    it "should create a new entry for a URL that's not been tracked", ->
+      spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
+        callback {}
+      Tracker.updateLocal 'cache', 'http://www.example.com'
 
-      it "should create a new entry for a URL that's not been tracked", ->
-        spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
-          callback {}
-        Tracker.updateLocal 'http://www.example.com'
+      expect(Tracker.storageArea.set).toHaveBeenCalledWith
+        cache:
+          'http://www.example.com': 3
 
-        expect(Tracker.storageArea.set).toHaveBeenCalledWith
+    it "should update an already existing URL", ->
+      spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
+        callback
           cache:
             'http://www.example.com': 3
+      Tracker.updateLocal 'cache', 'http://www.example.com'
 
-      it "should update an already existing URL", ->
-        spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
-          callback
-            cache:
-              'http://www.example.com': 3
-        Tracker.updateLocal 'http://www.example.com'
+      expect(Tracker.storageArea.set).toHaveBeenCalledWith
+        cache:
+          'http://www.example.com': 6
 
-        expect(Tracker.storageArea.set).toHaveBeenCalledWith
-          cache:
-            'http://www.example.com': 6
+  describe "extractDomain", ->
 
-    describe 'offline mode', ->
-      beforeEach ->
-        Tracker.config.OFFLINE_MODE = true
+    it "should extract the domain from the URL", ->
+      url = 'http://www.example.com/'
+      result = Tracker.extractDomain url
 
-      it "should create a new entry for a URL that's not been tracked", ->
-        spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
-          callback {}
-        Tracker.updateLocal 'http://www.example.com'
+      expect(result).toEqual 'example.com'
 
-        expect(Tracker.storageArea.set).toHaveBeenCalledWith
-          today:
-            'http://www.example.com': 3
+    it "should extract subdomains from the URL", ->
+      url = 'http://subdomain.domain.com/'
+      result = Tracker.extractDomain url
 
-      it "should update an already existing URL", ->
-        spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
-          callback
-            today:
-              'http://www.example.com': 3
-        Tracker.updateLocal 'http://www.example.com'
+      expect(result).toEqual 'subdomain.domain.com'
 
-        expect(Tracker.storageArea.set).toHaveBeenCalledWith
-          today:
-            'http://www.example.com': 6
+    it "should not extract the path of the URL", ->
+      url = 'http://example.com/this/is/a/path'
+      result = Tracker.extractDomain url
+
+      expect(result).toEqual 'example.com'
