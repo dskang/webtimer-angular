@@ -78,52 +78,47 @@ describe "Tracker", ->
 describe "DateManager", ->
 
   describe "checkDate", ->
-    setSpy = null
 
     beforeEach ->
       spyOn(DateManager.storageArea, 'get').andCallFake (key, callback) ->
         callback
-          date: new Date(1992, 6, 22) # date doesn't matter as only dateChange changes behavior
-      setSpy = spyOn(DateManager.storageArea, 'set')
+          date: '7/22/1992' # date doesn't matter as only dateChange changes behavior
+      spyOn(DateManager.storageArea, 'set')
 
     it "should save today's date if none already saved", ->
       DateManager.storageArea.get.andCallFake (key, callback) ->
         callback {}
       DateManager.checkDate()
-      newItems = setSpy.mostRecentCall.args[0]
 
-      expect(Object.keys(newItems).length).toEqual 1
-      expect(newItems.date.toLocaleDateString()).toEqual (new Date()).toLocaleDateString()
+      expect(DateManager.storageArea.set).toHaveBeenCalledWith
+        date: (new Date()).toLocaleDateString()
 
     it "should reset today on a new day", ->
       spyOn(DateManager, 'dateChange').andReturn ['day']
       DateManager.checkDate()
-      newItems = setSpy.mostRecentCall.args[0]
 
-      expect(Object.keys(newItems).length).toEqual 2
-      expect(newItems.date.toLocaleDateString()).toEqual (new Date()).toLocaleDateString()
-      expect(newItems.today).toEqual {}
+      expect(DateManager.storageArea.set).toHaveBeenCalledWith
+        date: (new Date()).toLocaleDateString()
+        today: {}
 
     it "should reset today and week on a new week", ->
       spyOn(DateManager, 'dateChange').andReturn ['week', 'day']
       DateManager.checkDate()
-      newItems = setSpy.mostRecentCall.args[0]
 
-      expect(Object.keys(newItems).length).toEqual 3
-      expect(newItems.date.toLocaleDateString()).toEqual (new Date()).toLocaleDateString()
-      expect(newItems.week).toEqual {}
-      expect(newItems.today).toEqual {}
+      expect(DateManager.storageArea.set).toHaveBeenCalledWith
+        date: (new Date()).toLocaleDateString()
+        week: {}
+        today: {}
 
     it "should reset today, week, and month on a new month", ->
       spyOn(DateManager, 'dateChange').andReturn ['month', 'week', 'day']
       DateManager.checkDate()
-      newItems = setSpy.mostRecentCall.args[0]
 
-      expect(Object.keys(newItems).length).toEqual 4
-      expect(newItems.date.toLocaleDateString()).toEqual (new Date()).toLocaleDateString()
-      expect(newItems.month).toEqual {}
-      expect(newItems.week).toEqual {}
-      expect(newItems.today).toEqual {}
+      expect(DateManager.storageArea.set).toHaveBeenCalledWith
+        date: (new Date()).toLocaleDateString()
+        month: {}
+        week: {}
+        today: {}
 
   describe "numDaysChanged", ->
     oldDate = null

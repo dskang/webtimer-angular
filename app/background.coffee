@@ -24,6 +24,7 @@ class Tracker
             activeTab = tabs[0]
             console.log "Current URL: #{activeTab.url}"
             if Tracker.validateUrl activeTab.url
+              DateManager.checkDate()
               @updateLocal ['cache'], activeTab.url
               @updateLocal ['today', 'week', 'month', 'allTime'], @extractDomain activeTab.url
 
@@ -72,7 +73,7 @@ class DateManager
   @checkDate: ->
     @storageArea.get 'date', (items) =>
       if items.date?
-        dateChanges = @dateChange items.date, new Date()
+        dateChanges = @dateChange new Date(items.date), new Date()
         if dateChanges.length > 0
           if 'day' in dateChanges
             items.today = {}
@@ -80,10 +81,10 @@ class DateManager
             items.week = {}
           if 'month' in dateChanges
             items.month = {}
-          items.date = new Date()
+          items.date = (new Date()).toLocaleDateString()
           @storageArea.set items
       else
-        items.date = new Date()
+        items.date = (new Date()).toLocaleDateString()
         @storageArea.set items
 
   @dateChange: (oldDate, newDate) ->
@@ -100,8 +101,8 @@ class DateManager
     changes
 
   @numDaysChanged: (oldDate, newDate) ->
-    midnightOldDate = new Date oldDate.getFullYear(), oldDate.getMonth(), oldDate.getDate()
-    midnightNewDate = new Date newDate.getFullYear(), newDate.getMonth(), newDate.getDate()
+    midnightOldDate = new Date oldDate.toLocaleDateString()
+    midnightNewDate = new Date newDate.toLocaleDateString()
     (midnightNewDate.getTime() - midnightOldDate.getTime()) / (1000 * 60 * 60 * 24)
 
 init = ->
