@@ -1,14 +1,20 @@
-# Load the Visualization API and the piechart package.
 google.load 'visualization', '1.0',
-  packages: ['corechart']
+  packages: [
+    'corechart'
+    'table'
+  ]
 
 app = window.app = angular.module 'popup', []
 
 app.controller 'MainCtrl', ['$scope', ($scope) ->
-  $scope.name = 'asdf'
+  $scope.mode = 'day'
 ]
 
-app.directive 'pieChart', ->
+app.directive 'graph', ->
+  link: (scope, element, attrs) ->
+    element.html attrs.mode
+
+app.directive 'wtChart', ->
   (scope, element, attrs) ->
     console.log 'directive'
     data = new google.visualization.DataTable()

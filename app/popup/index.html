@@ -1,9 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html ng-app="popup">
   <head>
   </head>
-  <body>
-    <div pie-chart></div>
+  <body ng-controller="MainCtrl">
+    <div>
+      <a href="#" ng-click="mode = 'day'">Day</a>
+      <a href="#" ng-click="mode = 'week'">Week</a>
+      <a href="#" ng-click="mode = 'month'">Month</a>
+      <a href="#" ng-click="mode = 'allTime'">All Time</a>
+    </div>
+    <div ng-switch="mode">
+      <div graph mode="day" ng-switch-when="day"></div>
+      <div graph mode="week" ng-switch-when="week"></div>
+      <div graph mode="month" ng-switch-when="month"></div>
+      <div graph mode="allTime" ng-switch-when="allTime"></div>
+    </div>
+    <div wt-chart></div>
     <script src="https://www.google.com/jsapi"></script>
     <script src="../bower_components/angular/angular.min.js"></script>
     <script src="popup.js"></script>
