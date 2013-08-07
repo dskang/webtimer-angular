@@ -10,6 +10,9 @@ class Tracker
     re = /:\/\/(?:www\.)?(.+?)\//
     url.match(re)[1]
 
+  @validateUrl: (url) ->
+    /^http/.test url
+
   @queryBrowser: =>
     chrome.idle.queryState @config.IDLE_THRESHOLD, (state) =>
       if state == 'active'
@@ -19,9 +22,10 @@ class Tracker
         chrome.tabs.query queryInfo, (tabs) =>
           if tabs.length
             activeTab = tabs[0]
-            console.log activeTab.url
-            @updateLocal 'cache', activeTab.url
-            @updateLocal 'today', activeTab.url
+            console.log "Current URL: #{activeTab.url}"
+            if Tracker.validateUrl activeTab.url
+              @updateLocal 'cache', activeTab.url
+              @updateLocal 'today', @extractDomain activeTab.url
 
   @updateLocal: (store, url) ->
     @storageArea.get store, (items) =>
@@ -30,14 +34,13 @@ class Tracker
       store[url] = 0 unless store[url]?
       store[url] += @config.QUERY_INTERVAL
       @storageArea.set items
-      console.log items
 
   @updateServer: =>
     @storageArea.get 'cache', (items) =>
       cache = items.cache
       if cache?
+        console.log 'Updating server with cache:'
         console.log cache
-        console.log 'Updating server'
         @storageArea.remove 'cache'
 
 class LoginCtrl

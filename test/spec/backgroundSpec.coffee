@@ -46,3 +46,17 @@ describe "Tracker", ->
       result = Tracker.extractDomain url
 
       expect(result).toEqual 'example.com'
+
+  describe "validateUrl", ->
+
+    it "should return true for HTTP and HTTPS URLs", ->
+      httpUrlResult = Tracker.validateUrl 'http://www.example.com/'
+      httpsUrlResult = Tracker.validateUrl 'https://www.example.com/'
+
+      expect(httpUrlResult).toBe true
+      expect(httpsUrlResult).toBe true
+
+    it "should return false for non-HTTP URLs", ->
+      result = Tracker.validateUrl 'chrome://extensions/'
+
+      expect(result).toBe false
