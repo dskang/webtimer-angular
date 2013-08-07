@@ -66,12 +66,50 @@ class LoginCtrl
   @sendUserInfo: (email, access_token) ->
     console.log 'Registering user: ', email, access_token
 
+class DateManager
+  @storageArea: chrome.storage.local
+
+  @checkDate: ->
+    @storageArea.get 'date', (items) =>
+      if items.date?
+        dateChanges = @dateChange items.date, new Date()
+        if dateChanges.length > 0
+          if 'day' in dateChanges
+            items.today = {}
+          if 'week' in dateChanges
+            items.week = {}
+          if 'month' in dateChanges
+            items.month = {}
+          items.date = new Date()
+          @storageArea.set items
+      else
+        items.date = new Date()
+        @storageArea.set items
+
+  @dateChange: (oldDate, newDate) ->
+    numDaysChanged = @numDaysChanged oldDate, newDate
+    yearChanged = newDate.getFullYear() != oldDate.getFullYear()
+    monthChanged = yearChanged or newDate.getMonth() != oldDate.getMonth()
+    weekChanged = newDate.getDay() < oldDate.getDay() or numDaysChanged > 7
+    dayChanged = numDaysChanged > 0
+
+    changes = []
+    changes.push 'month' if monthChanged
+    changes.push 'week' if weekChanged
+    changes.push 'day' if dayChanged
+    changes
+
+  @numDaysChanged: (oldDate, newDate) ->
+    midnightOldDate = new Date oldDate.getFullYear(), oldDate.getMonth(), oldDate.getDate()
+    midnightNewDate = new Date newDate.getFullYear(), newDate.getMonth(), newDate.getDate()
+    (midnightNewDate.getTime() - midnightOldDate.getTime()) / (1000 * 60 * 60 * 24)
+
 init = ->
   test_env = window.location.pathname != '/background.html'
   if test_env
     window.Tracker = Tracker
     window.LoginCtrl = LoginCtrl
-    window.DataManager = DataManager
+    window.DateManager = DateManager
   else
     window.setInterval Tracker.queryBrowser, Tracker.config.QUERY_INTERVAL * 1000
     window.setInterval Tracker.updateServer, Tracker.config.UPDATE_INTERVAL * 1000

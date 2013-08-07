@@ -74,3 +74,133 @@ describe "Tracker", ->
       result = Tracker.validateUrl 'chrome://extensions/'
 
       expect(result).toBe false
+
+describe "DateManager", ->
+
+  describe "checkDate", ->
+    setSpy = null
+
+    beforeEach ->
+      spyOn(DateManager.storageArea, 'get').andCallFake (key, callback) ->
+        callback
+          date: new Date(1992, 6, 22) # date doesn't matter as only dateChange changes behavior
+      setSpy = spyOn(DateManager.storageArea, 'set')
+
+    it "should save today's date if none already saved", ->
+      DateManager.storageArea.get.andCallFake (key, callback) ->
+        callback {}
+      DateManager.checkDate()
+      newItems = setSpy.mostRecentCall.args[0]
+
+      expect(Object.keys(newItems).length).toEqual 1
+      expect(newItems.date.toLocaleDateString()).toEqual (new Date()).toLocaleDateString()
+
+    it "should reset today on a new day", ->
+      spyOn(DateManager, 'dateChange').andReturn ['day']
+      DateManager.checkDate()
+      newItems = setSpy.mostRecentCall.args[0]
+
+      expect(Object.keys(newItems).length).toEqual 2
+      expect(newItems.date.toLocaleDateString()).toEqual (new Date()).toLocaleDateString()
+      expect(newItems.today).toEqual {}
+
+    it "should reset today and week on a new week", ->
+      spyOn(DateManager, 'dateChange').andReturn ['week', 'day']
+      DateManager.checkDate()
+      newItems = setSpy.mostRecentCall.args[0]
+
+      expect(Object.keys(newItems).length).toEqual 3
+      expect(newItems.date.toLocaleDateString()).toEqual (new Date()).toLocaleDateString()
+      expect(newItems.week).toEqual {}
+      expect(newItems.today).toEqual {}
+
+    it "should reset today, week, and month on a new month", ->
+      spyOn(DateManager, 'dateChange').andReturn ['month', 'week', 'day']
+      DateManager.checkDate()
+      newItems = setSpy.mostRecentCall.args[0]
+
+      expect(Object.keys(newItems).length).toEqual 4
+      expect(newItems.date.toLocaleDateString()).toEqual (new Date()).toLocaleDateString()
+      expect(newItems.month).toEqual {}
+      expect(newItems.week).toEqual {}
+      expect(newItems.today).toEqual {}
+
+  describe "numDaysChanged", ->
+    oldDate = null
+
+    beforeEach ->
+      oldDate = new Date 1992, 6, 22 # Wed, July 22, 1992
+
+    it "should count no changes", ->
+      newDate = new Date 1992, 6, 22, 22, 30, 30
+      numDaysChanged = DateManager.numDaysChanged oldDate, newDate
+
+      expect(numDaysChanged).toEqual 0
+
+    it "should count days changed", ->
+      newDate = new Date 1992, 6, 25
+      numDaysChanged = DateManager.numDaysChanged oldDate, newDate
+
+      expect(numDaysChanged).toEqual 3
+
+  describe "dateChange", ->
+    oldDate = null
+
+    beforeEach ->
+      oldDate = new Date 1992, 6, 22 # Wed, July 22, 1992
+
+    it "should detect no change", ->
+      newDate = new Date 1992, 6, 22
+      changes = DateManager.dateChange oldDate, newDate
+
+      expect(changes).toEqual []
+
+    it "should detect changes in day", ->
+      newDate = new Date 1992, 6, 24
+      changes = DateManager.dateChange oldDate, newDate
+
+      expect(changes.length).toEqual 1
+      expect(changes).toContain 'day'
+
+    it "should detect changes in week", ->
+      newDate = new Date 1992, 6, 30 # Thurs
+      changes = DateManager.dateChange oldDate, newDate
+
+      expect(changes.length).toEqual 2
+      expect(changes).toContain 'week'
+      expect(changes).toContain 'day'
+
+    it "should detect changes in week on a Sunday", ->
+      newDate = new Date 1992, 6, 26 # Sun
+      changes = DateManager.dateChange oldDate, newDate
+
+      expect(changes.length).toEqual 2
+      expect(changes).toContain 'week'
+      expect(changes).toContain 'day'
+
+    it "should detect changes in month", ->
+      newDate = new Date 1992, 7, 1
+      changes = DateManager.dateChange oldDate, newDate
+
+      expect(changes.length).toEqual 3
+      expect(changes).toContain 'month'
+      expect(changes).toContain 'week'
+      expect(changes).toContain 'day'
+
+    it "should treat changes in year as changes in month", ->
+      newDate = new Date 1993, 6, 22
+      changes = DateManager.dateChange oldDate, newDate
+
+      expect(changes.length).toEqual 3
+      expect(changes).toContain 'month'
+      expect(changes).toContain 'week'
+      expect(changes).toContain 'day'
+
+    it "should detect changes in month but not in week", ->
+      oldDate = new Date 1992, 6, 31 # Friday
+      newDate = new Date 1992, 7, 1 # Saturday
+      changes = DateManager.dateChange oldDate, newDate
+
+      expect(changes.length).toEqual 2
+      expect(changes).toContain 'month'
+      expect(changes).toContain 'day'
