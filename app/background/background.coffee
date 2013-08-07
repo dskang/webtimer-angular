@@ -115,7 +115,7 @@ class DateManager
     (midnightNewDate.getTime() - midnightOldDate.getTime()) / (1000 * 60 * 60 * 24)
 
 init = ->
-  test_env = window.location.pathname != '/background.html'
+  test_env = window.jasmine?
   if test_env
     window.Tracker = Tracker
     window.LoginCtrl = LoginCtrl
