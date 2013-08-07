@@ -61,42 +61,25 @@ describe "Tracker", ->
 
       expect(result).toBe false
 
-describe "Keeper", ->
+describe "DataManager", ->
 
-  describe "moveData", ->
+  describe "combineData", ->
 
-    beforeEach ->
-      spyOn(Keeper.storageArea, 'set')
+    it "should combine data when one of the store does not have data", ->
+      oldStore =
+        'example.com': 3
+      newStore = {}
+      combinedStore = DataManager.combineData oldStore, newStore
 
-    it "should not set anything when old key has no data", ->
-      spyOn(Keeper.storageArea, 'get').andCallFake (key, callback) ->
-        callback {}
-      Keeper.moveData 'today', 'week'
+      expect(combinedStore).toEqual
+        'example.com': 3
 
-      expect(Keeper.storageArea.set).not.toHaveBeenCalled()
+    it "should combine data when both stores have data", ->
+      oldStore =
+        'example.com': 6
+      newStore =
+        'example.com': 9
+      combinedStore = DataManager.combineData oldStore, newStore
 
-    it "should move data when new key does not have data", ->
-      spyOn(Keeper.storageArea, 'get').andCallFake (key, callback) ->
-        callback
-          today:
-            'example.com': 3
-      Keeper.moveData 'today', 'week'
-
-      expect(Keeper.storageArea.set).toHaveBeenCalledWith
-        today: {}
-        week:
-          'example.com': 3
-
-    it "should move data when new key already has data", ->
-      spyOn(Keeper.storageArea, 'get').andCallFake (key, callback) ->
-        callback
-          today:
-            'example.com': 6
-          week:
-            'example.com': 9
-      Keeper.moveData 'today', 'week'
-
-      expect(Keeper.storageArea.set).toHaveBeenCalledWith
-        today: {}
-        week:
-          'example.com': 15
+      expect(combinedStore).toEqual
+        'example.com': 15

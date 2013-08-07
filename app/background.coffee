@@ -65,27 +65,21 @@ class LoginCtrl
   @sendUserInfo: (email, access_token) ->
     console.log 'Registering user: ', email, access_token
 
-class Keeper
+class DataManager
   @storageArea: chrome.storage.local
 
-  @moveData: (oldKey, newKey) ->
-    @storageArea.get [oldKey, newKey], (items) =>
-      oldStore = items[oldKey]
-      if oldStore?
-        items[newKey] ?= {}
-        newStore = items[newKey]
-        for domain, duration of oldStore
-          newStore[domain] ?= 0
-          newStore[domain] += duration
-        items[oldKey] = {}
-        @storageArea.set items
+  @combineData: (store1, store2) ->
+    for domain, duration of store1
+      store2[domain] ?= 0
+      store2[domain] += duration
+    store2
 
 init = ->
   test_env = window.location.pathname != '/background.html'
   if test_env
     window.Tracker = Tracker
     window.LoginCtrl = LoginCtrl
-    window.Keeper = Keeper
+    window.DataManager = DataManager
   else
     window.setInterval Tracker.queryBrowser, Tracker.config.QUERY_INTERVAL * 1000
     window.setInterval Tracker.updateServer, Tracker.config.UPDATE_INTERVAL * 1000
