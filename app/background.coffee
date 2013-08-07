@@ -65,15 +65,6 @@ class LoginCtrl
   @sendUserInfo: (email, access_token) ->
     console.log 'Registering user: ', email, access_token
 
-class DataManager
-  @storageArea: chrome.storage.local
-
-  @combineData: (store1, store2) ->
-    for domain, duration of store1
-      store2[domain] ?= 0
-      store2[domain] += duration
-    store2
-
 init = ->
   test_env = window.location.pathname != '/background.html'
   if test_env

@@ -60,26 +60,3 @@ describe "Tracker", ->
       result = Tracker.validateUrl 'chrome://extensions/'
 
       expect(result).toBe false
-
-describe "DataManager", ->
-
-  describe "combineData", ->
-
-    it "should combine data when one of the store does not have data", ->
-      oldStore =
-        'example.com': 3
-      newStore = {}
-      combinedStore = DataManager.combineData oldStore, newStore
-
-      expect(combinedStore).toEqual
-        'example.com': 3
-
-    it "should combine data when both stores have data", ->
-      oldStore =
-        'example.com': 6
-      newStore =
-        'example.com': 9
-      combinedStore = DataManager.combineData oldStore, newStore
-
-      expect(combinedStore).toEqual
-        'example.com': 15
