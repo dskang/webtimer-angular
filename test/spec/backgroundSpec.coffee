@@ -19,36 +19,36 @@ describe "Tracker", ->
     it "should create a new entry for a URL that's not been tracked", ->
       spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
         callback {}
-      Tracker.updateLocal ['today', 'week', 'month', 'allTime'], 'http://www.example.com'
+      Tracker.updateLocal ['today', 'week', 'month', 'allTime'], 'example.com'
 
       expect(Tracker.storageArea.set).toHaveBeenCalledWith
         today:
-          'http://www.example.com': 3
+          'example.com': 3
         week:
-          'http://www.example.com': 3
+          'example.com': 3
         month:
-          'http://www.example.com': 3
+          'example.com': 3
         allTime:
-          'http://www.example.com': 3
+          'example.com': 3
 
     it "should update an already existing URL", ->
       spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
         callback
           month:
-            'http://www.example.com': 6
+            'example.com': 6
           allTime:
-            'http://www.example.com': 6
-      Tracker.updateLocal ['today', 'week', 'month', 'allTime'], 'http://www.example.com'
+            'example.com': 6
+      Tracker.updateLocal ['today', 'week', 'month', 'allTime'], 'example.com'
 
       expect(Tracker.storageArea.set).toHaveBeenCalledWith
         today:
-          'http://www.example.com': 3
+          'example.com': 3
         week:
-          'http://www.example.com': 3
+          'example.com': 3
         month:
-          'http://www.example.com': 9
+          'example.com': 9
         allTime:
-          'http://www.example.com': 9
+          'example.com': 9
 
   describe "extractDomain", ->
 
