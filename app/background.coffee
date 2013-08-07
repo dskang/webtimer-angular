@@ -24,16 +24,17 @@ class Tracker
             activeTab = tabs[0]
             console.log "Current URL: #{activeTab.url}"
             if Tracker.validateUrl activeTab.url
-              @updateLocal 'cache', activeTab.url
-              @updateLocal 'today', @extractDomain activeTab.url
+              @updateLocal ['cache'], activeTab.url
+              @updateLocal ['today', 'week', 'month', 'allTime'], @extractDomain activeTab.url
 
-  @updateLocal: (key, url) ->
-    @storageArea.get key, (items) =>
-      items[key] ?= {}
-      store = items[key]
-      store[url] = 0 unless store[url]?
-      store[url] += @config.QUERY_INTERVAL
-      @storageArea.set items
+  @updateLocal: (keys, url) ->
+    @storageArea.get keys, (items) =>
+      for key in keys
+        items[key] ?= {}
+        store = items[key]
+        store[url] ?= 0
+        store[url] += @config.QUERY_INTERVAL
+        @storageArea.set items
 
   @updateServer: =>
     @storageArea.get 'cache', (items) =>
