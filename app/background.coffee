@@ -13,13 +13,10 @@ class Tracker
   @validateUrl: (url) ->
     /^http/.test url
 
-  @updateBadge: (url) ->
-    @storageArea.get 'today', (items) ->
-      if items.today?[url]?
-        seconds = items.today[url]
-        minutes = Math.floor(seconds / 60)
-        chrome.browserAction.setBadgeText
-          text: "#{minutes}m"
+  @updateBadge: (seconds) ->
+    minutes = Math.floor(seconds / 60)
+    chrome.browserAction.setBadgeText
+      text: "#{minutes}m"
 
   @queryBrowser: =>
     chrome.idle.queryState @config.IDLE_THRESHOLD, (state) =>
@@ -35,7 +32,6 @@ class Tracker
               DateManager.checkDate()
               @updateLocal ['cache'], activeTab.url
               @updateLocal ['today', 'week', 'month', 'allTime'], @extractDomain activeTab.url
-              @updateBadge @extractDomain activeTab.url
             else
               chrome.browserAction.setBadgeText
                 text: ''
@@ -48,6 +44,7 @@ class Tracker
         store[url] ?= 0
         store[url] += @config.QUERY_INTERVAL
         @storageArea.set items
+        @updateBadge store[url] if key == 'today'
 
   @updateServer: =>
     @storageArea.get 'cache', (items) =>
