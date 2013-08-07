@@ -60,3 +60,43 @@ describe "Tracker", ->
       result = Tracker.validateUrl 'chrome://extensions/'
 
       expect(result).toBe false
+
+describe "Keeper", ->
+
+  describe "moveData", ->
+
+    beforeEach ->
+      spyOn(Keeper.storageArea, 'set')
+
+    it "should not set anything when old key has no data", ->
+      spyOn(Keeper.storageArea, 'get').andCallFake (key, callback) ->
+        callback {}
+      Keeper.moveData 'today', 'week'
+
+      expect(Keeper.storageArea.set).not.toHaveBeenCalled()
+
+    it "should move data when new key does not have data", ->
+      spyOn(Keeper.storageArea, 'get').andCallFake (key, callback) ->
+        callback
+          today:
+            'example.com': 3
+      Keeper.moveData 'today', 'week'
+
+      expect(Keeper.storageArea.set).toHaveBeenCalledWith
+        today: {}
+        week:
+          'example.com': 3
+
+    it "should move data when new key already has data", ->
+      spyOn(Keeper.storageArea, 'get').andCallFake (key, callback) ->
+        callback
+          today:
+            'example.com': 6
+          week:
+            'example.com': 9
+      Keeper.moveData 'today', 'week'
+
+      expect(Keeper.storageArea.set).toHaveBeenCalledWith
+        today: {}
+        week:
+          'example.com': 15

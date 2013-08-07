@@ -27,10 +27,10 @@ class Tracker
               @updateLocal 'cache', activeTab.url
               @updateLocal 'today', @extractDomain activeTab.url
 
-  @updateLocal: (store, url) ->
-    @storageArea.get store, (items) =>
-      items[store] ?= {}
-      store = items[store]
+  @updateLocal: (key, url) ->
+    @storageArea.get key, (items) =>
+      items[key] ?= {}
+      store = items[key]
       store[url] = 0 unless store[url]?
       store[url] += @config.QUERY_INTERVAL
       @storageArea.set items
@@ -65,11 +65,27 @@ class LoginCtrl
   @sendUserInfo: (email, access_token) ->
     console.log 'Registering user: ', email, access_token
 
+class Keeper
+  @storageArea: chrome.storage.local
+
+  @moveData: (oldKey, newKey) ->
+    @storageArea.get [oldKey, newKey], (items) =>
+      oldStore = items[oldKey]
+      if oldStore?
+        items[newKey] ?= {}
+        newStore = items[newKey]
+        for domain, duration of oldStore
+          newStore[domain] ?= 0
+          newStore[domain] += duration
+        items[oldKey] = {}
+        @storageArea.set items
+
 init = ->
   test_env = window.location.pathname != '/background.html'
   if test_env
     window.Tracker = Tracker
     window.LoginCtrl = LoginCtrl
+    window.Keeper = Keeper
   else
     window.setInterval Tracker.queryBrowser, Tracker.config.QUERY_INTERVAL * 1000
     window.setInterval Tracker.updateServer, Tracker.config.UPDATE_INTERVAL * 1000
