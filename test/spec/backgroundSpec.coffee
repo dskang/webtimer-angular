@@ -1,5 +1,18 @@
 describe "Tracker", ->
 
+  describe "updateBadge", ->
+
+    it "should set the badge with time in minutes for current URL", ->
+      spyOn(chrome.browserAction, 'setBadgeText')
+      spyOn(Tracker.storageArea, 'get').andCallFake (key, callback) ->
+        callback
+          today:
+            'example.com': 130
+      Tracker.updateBadge 'example.com'
+
+      expect(chrome.browserAction.setBadgeText).toHaveBeenCalledWith
+        text: '2m'
+
   describe "updateLocal", ->
 
     beforeEach ->
