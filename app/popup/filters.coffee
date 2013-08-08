@@ -15,15 +15,11 @@ app.filter 'timeString', ->
     secondText = if seconds > 1 then 'seconds' else 'second'
 
     if hours > 0
-      if minutes > 0
-        "#{hours} #{hourText} and #{minutes} #{minuteText}"
-      else
-        "#{hours} #{hourText}"
+      text = "#{hours} #{hourText}"
+      text += " and #{minutes} #{minuteText}" if minutes > 0
+    else if minutes > 0
+      text = "#{minutes} #{minuteText}"
+      text += " and #{seconds} #{secondText}" if seconds > 0
     else
-      if minutes > 0
-        if seconds > 0
-          "#{minutes} #{minuteText} and #{seconds} #{secondText}"
-        else
-          "#{minutes} #{minuteText}"
-      else
-        "#{seconds} #{secondText}"
+      text = "#{seconds} #{secondText}"
+    text
