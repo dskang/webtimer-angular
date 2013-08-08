@@ -82,6 +82,11 @@ module.exports = (grunt) ->
           ]
         ]
 
+    karma:
+      unit:
+        configFile: "karma.conf.coffee"
+        singleRun: true
+
   grunt.registerTask "default", [
     "clean"
     "coffee"
@@ -92,4 +97,10 @@ module.exports = (grunt) ->
     "clean"
     "coffee:dist"
     "copy:dist"
+  ]
+
+  grunt.registerTask "test", [
+    "clean"
+    "coffee"
+    "karma"
   ]

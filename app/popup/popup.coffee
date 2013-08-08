@@ -1,4 +1,4 @@
-google.load 'visualization', '1.0',
+google?.load 'visualization', '1.0',
   packages: [
     'corechart'
     'table'
@@ -10,24 +10,38 @@ app.controller 'MainCtrl', ['$scope', ($scope) ->
   $scope.mode = 'day'
 ]
 
-app.directive 'graph', ->
-  link: (scope, element, attrs) ->
-    element.html attrs.mode
+app.directive 'wtGraph', ->
+  templateUrl: 'graph.html'
 
-app.directive 'wtChart', ->
+app.directive 'wtTable', ['DomainData', (DomainData) ->
   (scope, element, attrs) ->
-    console.log 'directive'
-    data = new google.visualization.DataTable()
-    data.addColumn "string", "Topping"
-    data.addColumn "number", "Slices"
-    data.addRows [["Mushrooms", 3], ["Onions", 1], ["Olives", 1], ["Zucchini", 1], ["Pepperoni", 2]]
+    dataTable = new google.visualization.DataTable()
+    dataTable.addColumn 'string', 'Domain'
+    dataTable.addColumn 'number', 'Time Spent'
+    dataTable.addRows DomainData.getTableData scope.mode
 
-    # Set chart options
     options =
-      title: "How Much Pizza I Ate Last Night"
-      width: 400
-      height: 300
+      allowHtml: true
+      sort: 'disable'
 
-    # Instantiate and draw our chart, passing in some options.
-    chart = new google.visualization.PieChart(element[0])
-    chart.draw data, options
+    table = new google.visualization.Table element[0]
+    table.draw dataTable, options
+]
+
+app.directive 'wtChart', ['DomainData', (DomainData) ->
+  (scope, element, attrs) ->
+    dataTable = new google.visualization.DataTable()
+    dataTable.addColumn 'string', 'Domain'
+    dataTable.addColumn 'number', 'Time'
+    dataTable.addRows DomainData.getChartData scope.mode
+
+    options =
+      tooltip:
+        text: 'percentage'
+      chartArea:
+        width: 400
+        height: 180
+
+    chart = new google.visualization.PieChart element[0]
+    chart.draw dataTable, options
+]
