@@ -20,6 +20,7 @@ module.exports = (grunt) ->
         files: [
           "<%= webtimer.app %>/manifest.json"
           "<%= webtimer.app %>/{,*/}*.html"
+          "<%= webtimer.app %>/{,*/}*.css"
         ]
         tasks: ["copy:dist"]
 
@@ -63,6 +64,7 @@ module.exports = (grunt) ->
             "images/*"
             "oauth2/**"
             "{,*/}*.html"
+            "{,*/}*.css"
           ]
         ]
       test:

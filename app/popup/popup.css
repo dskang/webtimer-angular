@@ -1,0 +1,41 @@
+body {
+  width: 400px;
+  font-family: helvetica, arial, sans-serif;
+  font-size: 13px;
+}
+
+.nav {
+  text-align: right;
+}
+
+.active {
+  font-weight: bold;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:focus {
+  outline: none;
+}
+
+.graph {
+  margin-top: 10px;
+}
+
+.table {
+  margin-top: 15px;
+}
+
+#nodata {
+  display: none;
+  color: red;
+  font-weight: bold;
+}
+
+#nodata a {
+  text-decoration: underline;
+  color: red;
+}

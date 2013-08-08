@@ -1,27 +1,31 @@
 app.directive 'wtGraph', ->
+  scope:
+    mode: '='
   templateUrl: 'graph.html'
 
 app.directive 'wtTable', ['DomainData', (DomainData) ->
   (scope, element, attrs) ->
-    DomainData.getDataTable scope.mode, true, (dataTable) ->
-      options =
-        allowHtml: true
-        sort: 'disable'
+    scope.$watch 'mode', (mode) ->
+      DomainData.getDataTable mode, true, (dataTable) ->
+        options =
+          allowHtml: true
+          sort: 'disable'
 
-      table = new google.visualization.Table element[0]
-      table.draw dataTable, options
+        table = new google.visualization.Table element[0]
+        table.draw dataTable, options
 ]
 
 app.directive 'wtChart', ['DomainData', (DomainData) ->
   (scope, element, attrs) ->
-    DomainData.getDataTable scope.mode, false, (dataTable) ->
-      options =
-        tooltip:
-          text: 'percentage'
-        chartArea:
-          width: 400
-          height: 180
+    scope.$watch 'mode', (mode) ->
+      DomainData.getDataTable mode, false, (dataTable) ->
+        options =
+          tooltip:
+            text: 'percentage'
+          chartArea:
+            width: 400
+            height: 180
 
-      chart = new google.visualization.PieChart element[0]
-      chart.draw dataTable, options
+        chart = new google.visualization.PieChart element[0]
+        chart.draw dataTable, options
 ]
