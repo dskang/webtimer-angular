@@ -88,42 +88,59 @@ describe "DateManager", ->
 
   describe "checkDate", ->
 
+    callback = null
+
     beforeEach ->
       spyOn(DateManager.storageArea, 'get').andCallFake (key, callback) ->
         callback
           date: '7/22/1992' # date doesn't matter as only dateChange changes behavior
-      spyOn(DateManager.storageArea, 'set')
+      spyOn(DateManager.storageArea, 'set').andCallFake (key, callback) ->
+        callback?()
+      callback = jasmine.createSpy()
+
+    afterEach ->
+      expect(callback).toHaveBeenCalled()
+
+    it "should not set anything if date is the same", ->
+      spyOn(DateManager, 'dateChange').andReturn []
+      DateManager.checkDate callback
+
+      expect(DateManager.storageArea.set).not.toHaveBeenCalled()
 
     it "should save today's date if none already saved", ->
       DateManager.storageArea.get.andCallFake (key, callback) ->
         callback {}
-      DateManager.checkDate()
+      DateManager.checkDate callback
+      items = DateManager.storageArea.set.mostRecentCall.args[0]
 
-      expect(DateManager.storageArea.set).toHaveBeenCalledWith
+      expect(items).toEqual
         date: (new Date()).toLocaleDateString()
 
     it "should reset today on a new day", ->
       spyOn(DateManager, 'dateChange').andReturn ['day']
-      DateManager.checkDate()
+      DateManager.checkDate callback
+      items = DateManager.storageArea.set.mostRecentCall.args[0]
 
-      expect(DateManager.storageArea.set).toHaveBeenCalledWith
+      expect(items).toEqual
         date: (new Date()).toLocaleDateString()
         today: {}
 
     it "should reset today and week on a new week", ->
       spyOn(DateManager, 'dateChange').andReturn ['week', 'day']
-      DateManager.checkDate()
+      DateManager.checkDate callback
+      items = DateManager.storageArea.set.mostRecentCall.args[0]
 
-      expect(DateManager.storageArea.set).toHaveBeenCalledWith
+      expect(items).toEqual
         date: (new Date()).toLocaleDateString()
         week: {}
         today: {}
 
     it "should reset today, week, and month on a new month", ->
       spyOn(DateManager, 'dateChange').andReturn ['month', 'week', 'day']
-      DateManager.checkDate()
+      DateManager.checkDate callback
+      items = DateManager.storageArea.set.mostRecentCall.args[0]
 
-      expect(DateManager.storageArea.set).toHaveBeenCalledWith
+      expect(items).toEqual
         date: (new Date()).toLocaleDateString()
         month: {}
         week: {}

@@ -14,7 +14,7 @@ module.exports = (grunt) ->
         files: ["<%= webtimer.app %>/{,*/}*.coffee"]
         tasks: ["coffee:dist"]
       coffeeTest:
-        files: ["test/spec/{,*/}*.coffee"]
+        files: ["test/spec/**/*.coffee"]
         tasks: ["coffee:test"]
       copy:
         files: [

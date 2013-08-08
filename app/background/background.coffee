@@ -29,9 +29,9 @@ class Tracker
             activeTab = tabs[0]
             console.log "Current URL: #{activeTab.url}"
             if Tracker.validateUrl activeTab.url
-              DateManager.checkDate()
-              @updateLocal ['cache'], activeTab.url
-              @updateLocal ['today', 'week', 'month', 'allTime'], @extractDomain activeTab.url
+              DateManager.checkDate =>
+                @updateLocal ['cache'], activeTab.url
+                @updateLocal ['today', 'week', 'month', 'allTime'], @extractDomain activeTab.url
             else
               chrome.browserAction.setBadgeText
                 text: ''
@@ -79,11 +79,12 @@ class LoginCtrl
 class DateManager
   @storageArea: chrome.storage.local
 
-  @checkDate: ->
+  @checkDate: (callback) ->
     @storageArea.get 'date', (items) =>
       if items.date?
         dateChanges = @dateChange new Date(items.date), new Date()
         if dateChanges.length > 0
+          console.log 'dateChange'
           if 'day' in dateChanges
             items.today = {}
           if 'week' in dateChanges
@@ -91,10 +92,12 @@ class DateManager
           if 'month' in dateChanges
             items.month = {}
           items.date = (new Date()).toLocaleDateString()
-          @storageArea.set items
+          @storageArea.set items, callback
+        else
+          callback()
       else
         items.date = (new Date()).toLocaleDateString()
-        @storageArea.set items
+        @storageArea.set items, callback
 
   @dateChange: (oldDate, newDate) ->
     numDaysChanged = @numDaysChanged oldDate, newDate
