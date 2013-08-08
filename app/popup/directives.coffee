@@ -3,7 +3,7 @@ app.directive 'wtGraph', ->
 
 app.directive 'wtTable', ['DomainData', (DomainData) ->
   (scope, element, attrs) ->
-    DomainData.getDataTable scope.mode, (dataTable) ->
+    DomainData.getDataTable scope.mode, true, (dataTable) ->
       options =
         allowHtml: true
         sort: 'disable'
@@ -14,7 +14,7 @@ app.directive 'wtTable', ['DomainData', (DomainData) ->
 
 app.directive 'wtChart', ['DomainData', (DomainData) ->
   (scope, element, attrs) ->
-    DomainData.getDataTable scope.mode, (dataTable) ->
+    DomainData.getDataTable scope.mode, false, (dataTable) ->
       options =
         tooltip:
           text: 'percentage'

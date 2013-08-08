@@ -3,7 +3,7 @@ app.factory 'DomainData', ['$filter', ($filter) ->
 
   timeString = $filter 'timeString'
 
-  style = "text-align: left; white-space; normal;"
+  style = "text-align: left;"
 
   createRows = (store) ->
     rows = []
@@ -36,12 +36,30 @@ app.factory 'DomainData', ['$filter', ($filter) ->
     ]
     limitedRows
 
-  getDataTable: (mode, callback) ->
+  getTotalTime = (store) ->
+    total = 0
+    for domain, duration of store
+      total += duration
+    total
+
+  getDataTable: (mode, includeTotal, callback) ->
     key = if mode == 'day' then 'today' else mode
     storageArea.get key, (items) ->
       store = items[key]
       rows = createRows store
       rows = limitRows rows, store.other
+      if includeTotal
+        totalTime = getTotalTime store
+        rows.push [
+          v: 'Total'
+          p:
+            style: 'font-weight: bold;'
+        ,
+          v: totalTime
+          f: timeString totalTime
+          p:
+            style: "#{style} font-weight: bold;"
+        ]
 
       dataTable = new google.visualization.DataTable()
       dataTable.addColumn 'string', 'Domain'
