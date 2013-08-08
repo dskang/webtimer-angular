@@ -6,6 +6,6 @@ google?.load 'visualization', '1.0',
 
 app = window.app = angular.module 'popup', []
 
-app.controller 'MainCtrl', ['$scope', ($scope) ->
-  $scope.mode = 'day'
+app.run ['$rootScope', ($rootScope) ->
+  $rootScope.mode = 'day'
 ]
