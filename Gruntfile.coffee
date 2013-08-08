@@ -88,15 +88,20 @@ module.exports = (grunt) ->
         singleRun: true
 
   grunt.registerTask "default", [
-    "clean"
-    "coffee"
-    "copy"
+    "test"
+    "build:test"
   ]
 
-  grunt.registerTask "build", [
+  grunt.registerTask "build:dist", [
     "clean"
     "coffee:dist"
     "copy:dist"
+  ]
+
+  grunt.registerTask "build:test", [
+    "clean"
+    "coffee"
+    "copy"
   ]
 
   grunt.registerTask "test", [

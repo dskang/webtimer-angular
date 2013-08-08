@@ -1,19 +1,52 @@
-app.factory 'DomainData', ->
+app.factory 'DomainData', ['$filter', ($filter) ->
   storageArea = chrome.storage.local
+
   timeString = $filter 'timeString'
-  getData = (mode) ->
-    data = []
-    storageArea.get mode, (items) ->
-      store = items[mode]
-      for domain, duration of store
-        data.push [domain,
+
+  style = "text-align: left; white-space; normal;"
+
+  createRows = (store) ->
+    rows = []
+    for domain, duration of store
+      unless domain == 'other'
+        rows.push [domain,
           v: duration
           f: timeString duration
           p:
-            style: "text-align: left; white-space; normal;"
+            style: style
         ]
+    # Sort rows by descending duration
+    rows.sort (a, b) ->
+      b[1].v - a[1].v
+    rows
 
-  getTableData: (mode) ->
+  limitRows = (rows, other) ->
+    other ?= 0
+    limitedRows = []
+    for row, i in rows
+      if i < 7
+        limitedRows.push row
+      else
+        other += row[1].v
+    limitedRows.push ['Other',
+      v: other
+      f: timeString other
+      p:
+        style: style
+    ]
+    limitedRows
 
-  getChartData: (mode) ->
+  getDataTable: (mode, callback) ->
+    key = if mode == 'day' then 'today' else mode
+    storageArea.get key, (items) ->
+      store = items[key]
+      rows = createRows store
+      rows = limitRows rows, store.other
 
+      dataTable = new google.visualization.DataTable()
+      dataTable.addColumn 'string', 'Domain'
+      dataTable.addColumn 'number', 'Time Spent'
+      dataTable.addRows rows
+
+      callback dataTable
+]

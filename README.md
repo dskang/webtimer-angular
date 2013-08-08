@@ -7,9 +7,9 @@
         npm install
         bower install
 
-2. Build extension
+2. Run tests and build extension
 
-        grunt build
+        grunt
 
 3. Load unpacked extension in `chrome://extensions`
 
@@ -19,7 +19,7 @@
 
 1. Build extension with tests
 
-        grunt
+        grunt build:test
 
 2. Navigate to `chrome-extension://<extension-id>/spec/background/runner.html` to run unit tests
 
