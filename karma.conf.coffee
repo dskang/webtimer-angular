@@ -10,14 +10,14 @@ module.exports = (config) ->
       'app/bower_components/angular/angular.js'
       'app/bower_components/angular-mocks/angular-mocks.js'
       'app/popup/popup.coffee'
-      'app/popup/*.coffee'
+      'app/**/*.coffee'
       'test/spec/**/*.coffee'
     ]
 
     # list of files to exclude
     exclude: [
-      'test/spec/backgroundSpec.coffee'
-      'test/spec/runner.coffee'
+      'app/background/*.coffee'
+      'test/spec/background/*.coffee'
     ]
 
     # test results reporter to use

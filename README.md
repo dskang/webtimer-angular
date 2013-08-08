@@ -15,8 +15,14 @@
 
 ## Running Tests
 
+### background.js Tests
+
 1. Build extension with tests
 
         grunt
 
-2. Navigate to `chrome-extension://<extension-id>/spec/runner.html` to run unit tests
+2. Navigate to `chrome-extension://<extension-id>/spec/background/runner.html` to run unit tests
+
+### Angular Tests
+
+     grunt test

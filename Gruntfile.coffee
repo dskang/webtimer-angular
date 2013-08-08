@@ -78,7 +78,7 @@ module.exports = (grunt) ->
           cwd: "test"
           dest: "<%= webtimer.dist %>"
           src: [
-            "spec/runner.html"
+            "spec/background/runner.html"
           ]
         ]
 
