@@ -21,7 +21,10 @@
         ng-class="{ active : mode == 'allTime' }"
         ng-click="mode = 'allTime'">All Time</a>
     </div>
-    <div wt-graph mode="mode" class="graph"></div>
+    <div class="graph">
+      <div wt-chart class="chart"></div>
+      <div wt-table class="table"></div>
+    </div>
     <script src="https://www.google.com/jsapi"></script>
     <script src="../bower_components/angular/angular.min.js"></script>
     <script src="popup.js"></script>

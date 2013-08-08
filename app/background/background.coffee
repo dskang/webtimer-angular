@@ -27,7 +27,6 @@ class Tracker
         chrome.tabs.query queryInfo, (tabs) =>
           if tabs.length
             activeTab = tabs[0]
-            console.log "Current URL: #{activeTab.url}"
             if Tracker.validateUrl activeTab.url
               DateManager.checkDate =>
                 @updateLocal ['cache'], activeTab.url

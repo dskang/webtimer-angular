@@ -1,8 +1,3 @@
-app.directive 'wtGraph', ->
-  scope:
-    mode: '='
-  templateUrl: 'graph.html'
-
 app.directive 'wtTable', ['DomainData', (DomainData) ->
   (scope, element, attrs) ->
     scope.$watch 'mode', (mode) ->
